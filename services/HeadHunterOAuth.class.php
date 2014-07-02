@@ -9,7 +9,7 @@ class HeadHunterOAuth extends OAuth {
     protected $sUserAgent = 'CURL';
     protected $iOAuthVersion = 2;
 
-    public function getUserLink() {
+    public function getResumes() {
         $aParameters = array(
             'access_token' => $this->getAccessToken()
         );
@@ -18,10 +18,26 @@ class HeadHunterOAuth extends OAuth {
 
         $aResult = $this->makeRequest('https://api.hh.ru/resumes/mine', 'GET', $aParameters, $aHeaders);
 
-        if (!$aResult || !isset($aResult['items'][0]['alternate_url'])) {
+        if (!$aResult || !isset($aResult['items'])) {
             return false;
         }
 
-        return $aResult['items'][0]['alternate_url'];
+        return $aResult['items'];
+    }
+
+    public function getResume($sResumeId) {
+        $aParameters = array(
+            'access_token' => $this->getAccessToken()
+        );
+
+        $aHeaders = array('Authorization: Bearer ' . $this->getAccessToken());
+
+        $aResult = $this->makeRequest('https://api.hh.ru/resumes/' . $sResumeId, 'GET', $aParameters, $aHeaders);
+
+        if (!$aResult) {
+            return false;
+        }
+
+        return $aResult;
     }
 }
